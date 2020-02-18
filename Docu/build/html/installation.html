@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Installation &#8212; cid-X: Consistent invertible deformation-vector-fields for the XCAT phantom 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Welcome to cid-X" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to cid-X"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cid-X: Consistent invertible deformation-vector-fields for the XCAT phantom 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>Currently only python version 3 is supported and the package was developed and tested with version 3.6.
+Python packages needed are listed below. Install those to your system using the package manager of your
+choice such as pip or anaconda.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">configparser</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nibabel</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scipy</span></code></p></li>
+</ul>
+<p>Furthermore the following <a class="reference external" href="https://github.com/KCL-BMEIS/niftyreg">nifty-reg</a> executables need to be installed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reg_transform</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reg_resample</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reg_jacobian</span></code></p></li>
+</ul>
+<p>Either add the directory that contains those executables to the system path, or if you cannot –or do not want to–  add these to your path,
+please define the path in the configuration file in section <code class="docutils literal notranslate"><span class="pre">BATCH_POSTPROCESSING</span></code> to the variable <code class="docutils literal notranslate"><span class="pre">niftyRegBinDir</span></code>. Further
+information on this</p>
+</div>
+<div class="section" id="obtain-the-python-sources-and-a-first-dry-run">
+<h2>Obtain the python sources and a first dry-run<a class="headerlink" href="#obtain-the-python-sources-and-a-first-dry-run" title="Permalink to this headline">¶</a></h2>
+<p>Get the python source code of from <a class="reference external" href="https://github.com/UCL/cid-X">github</a>. Clone the repository or download the zip file</p>
+<p>Try that you have everything in place by</p>
+<ul class="simple">
+<li><p>opening a command-prompt such as <code class="docutils literal notranslate"><span class="pre">bash</span></code> and</p></li>
+<li><p>navigate to the source directory</p></li>
+<li><p>call python with the <em>main script</em> of the post-processing framework which is called <code class="docutils literal notranslate"><span class="pre">XCATdvfProcessing.py</span></code>.</p></li>
+</ul>
+<p>You sould see a basic usage message printed telling you that you might want to consider providing a configuration file.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span class="hll">cd /path/to/sources/pyCidX
+</span><span class="hll">python XCATdvfProcessing.py
+</span>
+&gt;&gt;&gt; Tool to post-process XCAT DVF text files.
+&gt;&gt;&gt; Usage: XCATdvfProcessing.py pathToConfigFile
+&gt;&gt;&gt;        - pathToConfigFile     -&gt; Path to the configuration file that contains all parameters for processing
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#obtain-the-python-sources-and-a-first-dry-run">Obtain the python sources and a first dry-run</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to cid-X</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to cid-X"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cid-X: Consistent invertible deformation-vector-fields for the XCAT phantom 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, University College London.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.2.
+    </div>
+  </body>
+</html>
