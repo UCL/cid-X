@@ -145,7 +145,7 @@ The configuration file
 
 The contents of the complete configuration file is given below. 
 
-.. literalinclude:: ../../PyXdPic/XCAT_dvf_processing.cfg
+.. literalinclude:: ../../PyCidX/XCAT_dvf_processing.cfg
    :language: python
 
 
