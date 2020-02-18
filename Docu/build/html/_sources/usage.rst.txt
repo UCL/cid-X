@@ -119,7 +119,7 @@ In this step the deformation vector fields produced in the previous step are use
 
 .. note:: 
 
-  The parameter ``dvfPostFix`` usually does not need to be changed. You should get a list of all post-processed DVF files by doing an ``ls` [BATCH_POSTPROCESSING][outDir]*[BATCH_WARPING][dvfPostFix]`` on the command line. Replace the elements in square brackets with the parameters in the corresponding sections of your configuration file.
+  The parameter ``dvfPostFix`` usually does not need to be changed. You should get a list of all post-processed DVF files by doing an ``ls [BATCH_POSTPROCESSING][outDir]*[BATCH_WARPING][dvfPostFix]`` on the command line. Replace the elements in square brackets with the parameters in the corresponding sections of your configuration file.
 
 
 
@@ -145,7 +145,7 @@ The configuration file
 
 The contents of the complete configuration file is given below. 
 
-.. literalinclude:: ../../PyXdPic/XCAT_dvf_processing.cfg
+.. literalinclude:: ../../PyCidX/XCAT_dvf_processing.cfg
    :language: python
 
 
