@@ -6,6 +6,8 @@
 Welcome to cid-X
 ================
 
+**cid-X: Consistent invertible deformation-vector-fields for the XCAT phantom**
+
 cid-X is a python software packate that makes the output XCAT defromation vector fields (DVFs) 
 consistent and invertible. It produces forward and backward DVFs, as well as images corresponding 
 to such DVFs. 

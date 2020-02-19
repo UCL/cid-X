@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'cid-X: Consistent invertible deformation-vector-fields for the XCAT phantom'
+project = 'cid-X'
 copyright = '2020, University College London'
 author = 'Bjoern Eiben'
 
@@ -64,4 +64,8 @@ import sphinx_rtd_theme
 
 extensions = [ "sphinx_rtd_theme", ]
 
-html_theme = "sphinx_rtd_theme"
+html_theme       = "sphinx_rtd_theme"
+html_favicon     = "rtic_icon.ico"
+html_logo        = "rtic_logo_bw.png"
+html_short_title = "cid-X"
+html_theme_options = { 'logo_only' :  True}
