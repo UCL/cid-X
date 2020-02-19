@@ -56,7 +56,7 @@ html_static_path = ['_static']
 
 
 # Define the master doc for read-the-docs.
-master_doc = 'index'
+# master_doc = 'index'
 
 
 # Updating to standard rtd theme
