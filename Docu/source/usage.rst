@@ -149,3 +149,36 @@ The contents of the complete configuration file is given below.
    :language: python
 
 
+Other (potentially useful) functions
+--------------------------
+
+The functionality described below is used as part of the post-processing framework. However, some functions may however
+be useful as a stand-alone application.
+
+Converting XCAT binary output to nifti images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The XCAT binary images can be converted to nifti image format by calling file ``convertXCATBinaryFile.py`` from the
+command line alongside some parameters that are required to fill in the nifti header information correctly. When run
+without any parameters, it will produce the following output.
+
+.. code-block:: none
+
+    python convertXCATBinaryFile.py
+
+    >> Tool to convert XCAT binary image files into nifti images.
+    >> Output: outputFileBaseName   Nifti image with the structure.
+    >> Usage: convertXCATDVFTextFile.py pathXCATDVFFile outputDir nx ny nz dx dy dz
+    >>    - pathXCATBinFile    -> Path to the .bin file output by XCAT
+    >>    - outputDir          -> Path to which the output nifti image will be written. Gets the same name as the XCAT file
+    >>    - nx ny nz           -> Number of voxels in x, y, and z direction (optional, defaults to 512 x 512 x 151)
+    >>    - dx dy dz           -> Voxel spacing in x, y, and z direction (optional, defaults to 500/512 x 500/512 x 2)
+    >>    - convertToHU        -> If converting an attenuation map, if the conversion to HU values should be performed set this to 1 [0]
+
+Define:
+* the input image (.bin XCAT attenuation),
+* the directory to where you would like to save the nifti image - the file name will be the same as the .bin file,
+* size (nx, ny, and nz) and
+* spacing (dx, dy, and dz).
+* (optional) 0/1 if you would like the image intensities to be converted into HU values.
+
