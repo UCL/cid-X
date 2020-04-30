@@ -152,15 +152,15 @@ The contents of the complete configuration file is given below.
 Other (potentially useful) functions
 --------------------------
 
-The functionality described below is used as part of the post-processing framework. However, some functions may however
-be useful as a stand-alone application.
+The functionality described below is used as part of the post-processing framework. However, some functions may be
+useful as on its own.
 
 Converting XCAT binary output to nifti images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The XCAT binary images can be converted to nifti image format by calling file ``convertXCATBinaryFile.py`` from the
-command line alongside some parameters that are required to fill in the nifti header information correctly. When run
-without any parameters, it will produce the following output.
+command line alongside with some parameters that are required to fill in the nifti header information correctly. When
+run without any parameters, it will produce the following output:
 
 .. code-block:: none
 
@@ -176,9 +176,11 @@ without any parameters, it will produce the following output.
     >>    - convertToHU        -> If converting an attenuation map, if the conversion to HU values should be performed set this to 1 [0]
 
 Define:
+
 * the input image (.bin XCAT attenuation),
 * the directory to where you would like to save the nifti image - the file name will be the same as the .bin file,
 * size (nx, ny, and nz) and
 * spacing (dx, dy, and dz).
 * (optional) 0/1 if you would like the image intensities to be converted into HU values.
 
+Note that the image will have the origin set to (0,0,0). 
