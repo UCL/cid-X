@@ -10,7 +10,8 @@ Welcome to cid-X
 
 cid-X is a python software package that makes the output XCAT deformation vector fields (DVFs)
 consistent and invertible. It produces forward and backward DVFs, as well as images corresponding 
-to such DVFs. 
+to such DVFs. If you use this software for your research, please cite this publication
+https://doi.org/10.1088/1361-6560/ab8533 by Eiben and Bertholet et al. that describes its implementation in detail.
 
 Features
 ---------
