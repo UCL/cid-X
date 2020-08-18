@@ -2,6 +2,7 @@ Usage
 =====
 
 
+
 Quick start
 -----------
 Fill in the configuration file ``XCAT_dvf_processing.cfg`` (see here: :ref:`config-file`) and call the main script with the config file as a parameter.
@@ -150,7 +151,7 @@ The contents of the complete configuration file is given below.
 
 
 Other (potentially useful) functions
---------------------------
+------------------------------------
 
 The functionality described below is used as part of the post-processing framework. However, some functions may be
 useful as on its own.
@@ -162,18 +163,16 @@ The XCAT binary images can be converted to nifti image format by calling file ``
 command line alongside with some parameters that are required to fill in the nifti header information correctly. When
 run without any parameters, it will produce the following output:
 
-.. code-block:: none
-
-    python convertXCATBinaryFile.py
-
-    >> Tool to convert XCAT binary image files into nifti images.
-    >> Output: outputFileBaseName   Nifti image with the structure.
-    >> Usage: convertXCATDVFTextFile.py pathXCATDVFFile outputDir nx ny nz dx dy dz
-    >>    - pathXCATBinFile    -> Path to the .bin file output by XCAT
-    >>    - outputDir          -> Path to which the output nifti image will be written. Gets the same name as the XCAT file
-    >>    - nx ny nz           -> Number of voxels in x, y, and z direction (optional, defaults to 512 x 512 x 151)
-    >>    - dx dy dz           -> Voxel spacing in x, y, and z direction (optional, defaults to 500/512 x 500/512 x 2)
-    >>    - convertToHU        -> If converting an attenuation map, if the conversion to HU values should be performed set this to 1 [0]
+.. code-block:: python
+   python convertXCATBinaryFile.py
+   >> Tool to convert XCAT binary image files into nifti images.
+   >> Output: outputFileBaseName   Nifti image with the structure.
+   >> Usage: convertXCATDVFTextFile.py pathXCATDVFFile outputDir nx ny nz dx dy dz
+   >>    - pathXCATBinFile    -> Path to the .bin file output by XCAT
+   >>    - outputDir          -> Path to which the output nifti image will be written. Gets the same name as the XCAT file
+   >>    - nx ny nz           -> Number of voxels in x, y, and z direction (optional, defaults to 512 x 512 x 151)
+   >>    - dx dy dz           -> Voxel spacing in x, y, and z direction (optional, defaults to 500/512 x 500/512 x 2)
+   >>    - convertToHU        -> If converting an attenuation map, if the conversion to HU values should be performed set this to 1 [0]
 
 Define:
 
@@ -183,7 +182,8 @@ Define:
 * spacing (dx, dy, and dz).
 * (optional) 0/1 if you would like the image intensities to be converted into HU values.
 
-Note that the image will have the origin set to (0,0,0).
+.. note::
+   Note that the image will have the origin set to (0,0,0).
 
 
 Converting XCAT text deformation vector fields to nifti images
@@ -194,20 +194,19 @@ a nifit image file that can be used with niftiy-reg for instance: ``convertXCATD
 
 When the script is called without parameters, the following help message will appear:
 
-.. code-block:: none
+.. code-block:: python
 
-    python convertXCATDVFTextFile.py
-
-    >> Tool to convert XCAT DVF text output files into nifti images.
-    >>   Output: outputDir/XCAT_outFileName__dvf.nii.gz       DVF image with a displacement vector (in voxels).
-    >>
-    >> Usage: convertXCATDVFTextFile.py pathXCATDVFFile pathToNiftiImage outputDir nx ny nz dx dy dz
-    >>         - pathXCATDVFFile       -> Path to the DVF text file output by XCAT
-    >>         - pathToNiftiImage      -> Path to an image showing the XCAT anatomy in nifti image format
-    >>         - outputDir             -> Path to where the output will be saved
-    >>         - nx ny nz              -> Number of voxels in x, y, and z direction (optional, defaults to 256 x 256 x 161)
-    >>         - dx dy dz              -> Voxel spacing in x, y, and z direction (optional, defaults to 2 x 2 x 2)
-    >>         - topZ0                 -> Number of z-slices (from superior) in the lung-segmentation that is forced to zero, optional.
+   python convertXCATDVFTextFile.py
+   >> Tool to convert XCAT DVF text output files into nifti images.
+   >>   Output: outputDir/XCAT_outFileName__dvf.nii.gz       DVF image with a displacement vector (in voxels).
+   >>
+   >> Usage: convertXCATDVFTextFile.py pathXCATDVFFile pathToNiftiImage outputDir nx ny nz dx dy dz
+   >>         - pathXCATDVFFile       -> Path to the DVF text file output by XCAT
+   >>         - pathToNiftiImage      -> Path to an image showing the XCAT anatomy in nifti image format
+   >>         - outputDir             -> Path to where the output will be saved
+   >>         - nx ny nz              -> Number of voxels in x, y, and z direction (optional, defaults to 256 x 256 x 161)
+   >>         - dx dy dz              -> Voxel spacing in x, y, and z direction (optional, defaults to 2 x 2 x 2)
+   >>         - topZ0                 -> Number of z-slices (from superior) in the lung-segmentation that is forced to zero, optional.
 
 Define:
 
@@ -216,5 +215,6 @@ Define:
 * The number voxels of the original simulation (nx, ny, and nz)
 * The voxel spacing (dx, dy, and dz)
 
-Note that when using the generated DVFs with the nifty-reg package, the DVF defines relative displacements ( and not
-absolute deformations).
+.. note::
+   Note that when using the generated DVFs with the nifty-reg package, the DVF defines relative displacements ( and not
+   absolute deformations).
