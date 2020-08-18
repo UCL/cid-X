@@ -183,4 +183,38 @@ Define:
 * spacing (dx, dy, and dz).
 * (optional) 0/1 if you would like the image intensities to be converted into HU values.
 
-Note that the image will have the origin set to (0,0,0). 
+Note that the image will have the origin set to (0,0,0).
+
+
+Converting XCAT text deformation vector fields to nifti images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The XCAT software writes the output DVF to a text file. This package contains a python script to convert this into
+a nifit image file that can be used with niftiy-reg for instance: ``convertXCATDVFTextFile.py``.
+
+When the script is called without parameters, the following help message will appear:
+
+.. code-block:: none
+
+    python convertXCATDVFTextFile.py
+
+    >> Tool to convert XCAT DVF text output files into nifti images.
+    >>   Output: outputDir/XCAT_outFileName__dvf.nii.gz       DVF image with a displacement vector (in voxels).
+    >>
+    >> Usage: convertXCATDVFTextFile.py pathXCATDVFFile pathToNiftiImage outputDir nx ny nz dx dy dz
+    >>         - pathXCATDVFFile       -> Path to the DVF text file output by XCAT
+    >>         - pathToNiftiImage      -> Path to an image showing the XCAT anatomy in nifti image format
+    >>         - outputDir             -> Path to where the output will be saved
+    >>         - nx ny nz              -> Number of voxels in x, y, and z direction (optional, defaults to 256 x 256 x 161)
+    >>         - dx dy dz              -> Voxel spacing in x, y, and z direction (optional, defaults to 2 x 2 x 2)
+    >>         - topZ0                 -> Number of z-slices (from superior) in the lung-segmentation that is forced to zero, optional.
+
+Define:
+
+* The DVF text file ans an input,
+* A nifti image (CT-like/attenuation) converted as described in the section above
+* The number voxels of the original simulation (nx, ny, and nz)
+* The voxel spacing (dx, dy, and dz)
+
+Note that when using the generated DVFs with the nifty-reg package, the DVF defines relative displacements ( and not
+absolute deformations).
