@@ -422,18 +422,19 @@ def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName,
 if __name__ == "__main__":
     
     print("Tool to convert XCAT DVF text output files into nifti images.")
-    print("  Output: outputDir/XCAT_outFileName__label.nii.gz     label image with an index for each anatomical structure.")
-    print("  Output: outputDir/XCAT_outFileName__labelDict.json   dictionary of the label number - to label name association.")
-    print("          outputDir/XCAT_outFileName__dvf.nii.gz       DVF image with a displacement vector (in voxels).")
+    # The commented files will be written if the boolean variables below are set accordingly (generateLabels/generateLSInputData)
+    # print("  Output: outputDir/XCAT_outFileName__label.nii.gz     label image with an index for each anatomical structure.")
+    # print("  Output: outputDir/XCAT_outFileName__labelDict.json   dictionary of the label number - to label name association.")
+    print("  Output: outputDir/XCAT_outFileName__dvf.nii.gz       DVF image with a displacement vector (in voxels).")
     
     if len(sys.argv) < 2:
-        print("Usage: convertXCATDVFTextFile.py pathXCATDVFFile outputDir nx ny nz dx dy dz")
+        print("Usage: convertXCATDVFTextFile.py pathXCATDVFFile pathToNiftiImage outputDir nx ny nz dx dy dz")
         print("        - pathXCATDVFFile       -> Path to the DVF text file output by XCAT")
-        print("        - pathXCATMaskNiftiFile -> Path to the DVF text file output by XCAT")
+        print("        - pathToNiftiImage      -> Path to an image showing the XCAT anatomy in nifti image format")
         print("        - outputDir             -> Path to where the output will be saved ")
         print("        - nx ny nz              -> Number of voxels in x, y, and z direction (optional, defaults to 256 x 256 x 161)")
         print("        - dx dy dz              -> Voxel spacing in x, y, and z direction (optional, defaults to 2 x 2 x 2)")
-        print("        - topZ0                 -> Number of z-slices (from superior) in the lung-segmentation that is forced to zero")
+        print("        - topZ0                 -> Number of z-slices (from superior) in the lung-segmentation that is forced to zero, optional.")
         print(" ")
         print("        Running on "  + platform.architecture()[1] + " " + platform.architecture()[0] )
         sys.exit()
@@ -460,18 +461,17 @@ if __name__ == "__main__":
     
     if len(sys.argv) > 10:
         clipLungThresholdTop = int( sys.argv[10] )
-        
-    
+
     generateLabels      = False
     generateLSInputData = False
     generateDVFNiiFile  = True
     
-    convertXCATDVFTextFileToNiftiImage( XCATdvfTextFileNameIn, 
-                                        XCATstructuralNiftiImageFileNameIn, 
-                                        outputDirectoryName, 
-                                        imageDimension, 
-                                        voxelSize, 
-                                        generateLabels, 
-                                        generateLSInputData,
-                                        generateDVFNiiFile )
-                                        
+    convertXCATDVFTextFileToNiftiImage(XCATdvfTextFileNameIn,
+                                       XCATstructuralNiftiImageFileNameIn,
+                                       outputDirectoryName,
+                                       imageDimension,
+                                       voxelSize,
+                                       generateLabels,
+                                       generateLSInputData,
+                                       generateDVFNiiFile)
+
