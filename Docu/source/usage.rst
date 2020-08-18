@@ -156,7 +156,7 @@ The functionality described below is used as part of the post-processing framewo
 useful as on its own.
 
 Converting XCAT binary output to nifti images
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The XCAT binary images can be converted to nifti image format by calling file ``convertXCATBinaryFile.py`` from the
 command line alongside with some parameters that are required to fill in the nifti header information correctly. When
@@ -187,7 +187,7 @@ Note that the image will have the origin set to (0,0,0).
 
 
 Converting XCAT text deformation vector fields to nifti images
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The XCAT software writes the output DVF to a text file. This package contains a python script to convert this into
 a nifit image file that can be used with niftiy-reg for instance: ``convertXCATDVFTextFile.py``.
