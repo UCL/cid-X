@@ -19,7 +19,7 @@ def runCommand( cmdIn, paramsIn, logFileName=None, workDir=None, onlyPrintComman
     print('Executing:\n -> %s %s' % ( cmdIn, paramsIn ) )
     cmd = shlex.split ( cmdIn + ' ' + paramsIn, posix=False ) 
 
-    tic = time.clock()
+    tic = time.perf_counter()
     ret = 0
     
     if not onlyPrintCommand :
@@ -37,7 +37,7 @@ def runCommand( cmdIn, paramsIn, logFileName=None, workDir=None, onlyPrintComman
     if workDir != None :
         os.chdir( curDir )
     
-    toc = time.clock()
+    toc = time.perf_counter()
     
     print('Done. This took %.2fs' %( toc-tic ) )
     return ret
