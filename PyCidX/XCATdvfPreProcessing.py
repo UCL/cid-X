@@ -158,8 +158,8 @@ class XCATdvfPreProcessing( object ):
                 else:
                     self.saveLevelSetImage = False
                     
-            if 'outDistMapImgName' in parserIn[ 'PREPROCESSING' ].keys() :
-                self.outLevelSetImgName =  parserIn[ 'PREPROCESSING' ][ 'outLevelSetImgName' ]
+            if 'outLevelSetImgName' in parserIn[ 'PREPROCESSING' ].keys() :
+                self.outLevelSetImgName = parserIn[ 'PREPROCESSING' ][ 'outLevelSetImgName' ]
 
         except:
             print(" Error: Configuration failed! ")
