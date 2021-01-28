@@ -11,7 +11,7 @@ Fill in the configuration file ``XCAT_dvf_processing.cfg`` (see here: :ref:`conf
 
    python XCATdvfProcessing.py XCAT_dvf_processing.cfg
 
-A detailed description of how to configure the processing is given below
+A detailed description of how to configure the processing is given below.
 
 
 
@@ -24,7 +24,8 @@ The processing pipeline can be divided into three separate parts, namely
 * **batch DVF post-processing** (see: :ref:`batch-dvf-processing`), and 
 * **batch image warping** (see: :ref:`batch-warping`). 
 
-By setting the corresponding parameters in the first section of the configuration file, the different steps are enabled or disabled. It is highly recommended to run each individual step and check the results before continuing with the next. 
+By setting the corresponding parameters in the first section of the configuration file, the different steps are enabled
+or disabled. It is highly recommended to run each individual step and check the results before continuing with the next.
 
 .. code-block:: python
    
@@ -38,7 +39,10 @@ By setting the corresponding parameters in the first section of the configuratio
 Pre-processing
 ^^^^^^^^^^^^^^
 
-The most important output of the pre-processing is the *signed distance map* that defines the sliding regions in the first time point. To calculate this, first a rough segmentation using the information provided by the XCAT DVF-text file is generated. This is an incomplete segmentation (since organs are defined by surfaces), the sliding region is thereafter calculated by a level-set evolution. 
+The most important output of the pre-processing is the *signed distance map* that defines the sliding regions in the
+first time point. To calculate this, first a rough segmentation using the information provided by the XCAT DVF-text file
+is generated. This is an incomplete segmentation (since organs are defined by surfaces), the sliding region is
+thereafter calculated by a level-set evolution.
 
 .. note:: 
    
@@ -49,7 +53,7 @@ The most important output of the pre-processing is the *signed distance map* tha
 
    [PREPROCESSING]
    xcatAtnFile       = <Complete/Path/to/the/XCAT/attenuation/file.bin>
-   xcatDVFFile       = <Complete/Path/to/the/XCAT/DVF/file.txt>
+   xcatDVFFile       = <Complete/Path/to/the/XCAT/DVF/file.txt>     # This can also be a g-zipped file ending with .txt.gz
    outDir            = <Path/to/where/the/results/of/the/pre-processing/step/will/be/written/>
    outDistMapImgName = <fileNameOfTheSignedDistanceMap.nii.gz>      # will be written to [PREPROCESSING][outDir]
    outXCATAtnImgName = <fileNameOfTheXCATAttenuationFile.nii.gz>    # will be written to [PREPROCESSING][outDir]
@@ -73,15 +77,19 @@ The most important output of the pre-processing is the *signed distance map* tha
 Batch DVF post-processing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The batch processing uses the signed distance map from the previous step to calculate the sliding-preserving inversion of the XCAT DVF. The output of this step are the forward and backward DVFs that can are used as the new ground-truth deformations. 
+The batch processing uses the signed distance map from the previous step to calculate the sliding-preserving inversion
+of the XCAT DVF. The output of this step are the forward and backward DVFs that can are used as the new ground-truth
+deformations.
 
-One final pre-processing step is carried out for the first iteration, which calculates the spatial gradient of the signed distance map at the first simulated time point. Only the output file names need to be specified and if these files do not exist in the pre-processing output directory these will be automatically generated.
+One final pre-processing step is carried out for the first iteration, which calculates the spatial gradient of the
+signed distance map at the first simulated time point. Only the output file names need to be specified and if these
+files do not exist in the pre-processing output directory these will be automatically generated.
 
 
 .. code-block:: python
 
    [BATCH_POSTPROCESSING]
-   xcatDVFFilePattern   = <Complete/Path/and/pattern/of/all/XCAT/DVF_files_vec_frame1*.txt>   # Use the wildcard * to enable listing all DVF files
+   xcatDVFFilePattern   = <Complete/Path/and/pattern/of/all/XCAT/DVF_files_vec_frame1*.txt>   # Use the wildcard * to enable listing all DVF files, g-zipped text files ending with .txt.gz are also supported
    outDir               = <Path/to/where/the/results/of/the/batch-dvf-processing/step/will/be/written/>
    tmpDir               = <Path/to/where/temporary/filest/of/the/batch-dvf-processing/step/will/be/written/>
    outDistMapDxImgName  = <fileNameOfTheSDT_gradientInX.nii.gz>    # maybe something like this: distMap_dx.nii.gz
@@ -93,7 +101,9 @@ One final pre-processing step is carried out for the first iteration, which calc
    # Optional, comment if not using
    niftyRegBinDir       =  <Path/to/where/the/niftyReg/binaries/are/installed/>
 
-XCAT DVF text files that cannot be completely processed will be moved to the path defined in ``[BATCH_POSTPROCESSING][corruptedFilesDir]``. Incomplete processing can be caused by corrupted XCAT-text files or by other errors occuring during the processing.
+XCAT DVF text files that cannot be completely processed will be moved to the path defined in
+``[BATCH_POSTPROCESSING][corruptedFilesDir]``. Incomplete processing can be caused by corrupted XCAT-text files or by
+other errors occurring during the processing.
 
 
 .. _batch-warping:
@@ -101,7 +111,8 @@ XCAT DVF text files that cannot be completely processed will be moved to the pat
 Batch warping
 ^^^^^^^^^^^^^
 
-In this step the deformation vector fields produced in the previous step are used to transform/warp the first time point to all other time points.
+In this step the deformation vector fields produced in the previous step are used to transform/warp the first time point
+to all other time points.
 
 .. code-block:: python
 
@@ -120,22 +131,30 @@ In this step the deformation vector fields produced in the previous step are use
 
 .. note:: 
 
-  The parameter ``dvfPostFix`` usually does not need to be changed. You should get a list of all post-processed DVF files by doing an ``ls [BATCH_POSTPROCESSING][outDir]*[BATCH_WARPING][dvfPostFix]`` on the command line. Replace the elements in square brackets with the parameters in the corresponding sections of your configuration file.
+  The parameter ``dvfPostFix`` usually does not need to be changed. You should get a list of all post-processed DVF
+  files by doing an ``ls [BATCH_POSTPROCESSING][outDir]*[BATCH_WARPING][dvfPostFix]`` on the command line. Replace the
+  elements in square brackets with the parameters in the corresponding sections of your configuration file.
 
 
 
 General notes
 -------------
 
-* Image files are always saved in nifti image format. To save space it is highly recommended to use the compressed *g-zipped* file format. This can be done by selecting the file extension ``.nii.gz`` instead of ``.nii``.
+* Image files are always saved in nifti image format. To save space it is highly recommended to use the compressed
+  *g-zipped* file format. This can be done by selecting the file extension ``.nii.gz`` instead of ``.nii``.
 
 * Each processing step has its own output directory
 
-* Some computations in the later parts of the processing pipeline depend on previous results. Some results are thus expected in the output directories. 
+* Some computations in the later parts of the processing pipeline depend on previous results. Some results are thus
+  expected in the output directories.
 
 * End parameters that define a path with the separator /
 
 * Please use the forward slash / as a path separator also on Windows systems
+
+* To be more resourceful with the original XCAT DVF text files, these can be compressed using gzip. No decompression is
+  required before running, however, the parameters in the config file need to reflect the different file ending, i.e.
+  either ``.txt`` or ``.txt.gz``.
 
 
 
@@ -210,11 +229,11 @@ When the script is called without parameters, the following help message will ap
 
 Define:
 
-* The DVF text file ans an input,
+* The DVF text file as an input,
 * A nifti image (CT-like/attenuation) converted as described in the section above
 * The number voxels of the original simulation (nx, ny, and nz)
 * The voxel spacing (dx, dy, and dz)
 
 .. note::
-   Note that when using the generated DVFs with the nifty-reg package, the DVF defines relative displacements ( and not
+   Note that when using the generated DVFs with the nifty-reg package, the DVF defines relative displacements (and not
    absolute deformations).
