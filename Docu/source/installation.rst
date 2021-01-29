@@ -19,14 +19,15 @@ Furthermore the following `nifty-reg <https://github.com/KCL-BMEIS/niftyreg>`_ e
 * ``reg_resample``
 * ``reg_jacobian``
 
-Either add the directory that contains those executables to the system path, or if you cannot --or do not want to--  add these to your path, 
-please define the path in the configuration file in section ``BATCH_POSTPROCESSING`` to the variable ``niftyRegBinDir``. Further 
-information on this
+Either add the directory that contains those executables to the system path, or if you cannot --or do not want to--  add
+these to your path, please define the path in the configuration file in section ``BATCH_POSTPROCESSING`` to the variable
+``niftyRegBinDir``.
 
 Obtain the python sources and a first dry-run
 ---------------------------------------------
 
-Get the python source code of from `github <https://github.com/UCL/cid-X>`_. Clone the repository or download the zip file
+Get the python source code of from `github <https://github.com/UCL/cid-X>`_. Clone the repository or download the zip
+file.
 
 Try that you have everything in place by
 

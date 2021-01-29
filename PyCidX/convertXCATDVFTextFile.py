@@ -7,7 +7,8 @@ import json
 import os
 import platform
 from scipy.ndimage import distance_transform_edt, binary_dilation, binary_erosion
-
+import gzip
+import io
 
 knownInsideStructures = { 'bronchi' : 0 ,
                           'asc_large_int': 0,
@@ -147,6 +148,62 @@ knownOutsideStructures = {  'chest_surface':1,
                             'sternum':1 }
 
 
+def processDVFTextFileContents(decodedFile, tissueClassDict, labelVol, dvfVol ):
+    """
+    Function that processes the file contents and puts it into the variables
+    :param decodedFile: The file object, either read with open or gzip and decoder.
+    :param tissueClassDict: The dictionary holding the tissue classes (assumed to be empty).
+    :param labelVol: The numpy array holding the tissue labels.
+    :param dvfVol: The numpy array holding the dvf.
+    """
+
+
+    # Counter that keeps track of how many classes were found
+    nextTissueClassNum = 1
+
+    while (True):
+        # Content can be array of variable length
+        content = decodedFile.readlines(1)
+
+        # Check for end of file
+        if content == []:
+            break
+
+        for c in content:
+            # Only analyse those content lines that hold vector information
+
+            if c.find('vector') == -1:
+                continue
+
+            splitC = c.split()
+
+            # Test if the current tissue class was used before if not add it to the dictionary
+            try:
+                curTissueClassID = tissueClassDict[splitC[0]]
+
+            except:
+                tissueClassDict[splitC[0]] = nextTissueClassNum
+                curTissueClassID = nextTissueClassNum
+                nextTissueClassNum += 1
+
+            # Get the current image index
+            curIDX_x = int(splitC[2])
+            curIDX_y = int(splitC[3])
+            curIDX_z = int(splitC[4])
+
+            # Fill the label volume
+            labelVol[curIDX_x, curIDX_y, curIDX_z] = curTissueClassID
+
+            # Get the displacement vector
+            curDisplacement_x = float(splitC[6]) - curIDX_x
+            curDisplacement_y = float(splitC[7]) - curIDX_y
+            curDisplacement_z = float(splitC[8]) - curIDX_z
+
+            dvfVol[curIDX_x, curIDX_y, curIDX_z, 0, 0] = curDisplacement_x
+            dvfVol[curIDX_x, curIDX_y, curIDX_z, 0, 1] = curDisplacement_y
+            dvfVol[curIDX_x, curIDX_y, curIDX_z, 0, 2] = curDisplacement_z
+
+
 def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName, 
                                         structuralNiftiImageFileName, 
                                         outputDirectory, 
@@ -191,55 +248,16 @@ def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName,
     # Dictionary holding the tissue classes 
     tissueClassDict = {}
     
-    # Counter that keeps track of how many classes were found
-    nextTissueClassNum = 1
-
     # Read in the text file and analyse at the same time
     print("  ... Reading file and analysing file contents ...")
-    with open(inputXCATDVFFileName) as f:
-        
-        while(True):
-            # Content can be array of variable length
-            content=f.readlines(1)
-            
-            # Check for end of file
-            if content ==[]:
-                break
-            
-            for c in content:
-                # Only analyse those content lines that hold vector information
 
-                if c.find('vector')==-1:
-                    continue
-            
-                splitC = c.split()
-            
-                # Test if the current tissue class was used before if not add it to the dictionary
-                try:
-                    curTissueClassID = tissueClassDict[ splitC[0] ]
-                    
-                except:
-                    tissueClassDict[splitC[0]] = nextTissueClassNum
-                    curTissueClassID = nextTissueClassNum
-                    nextTissueClassNum += 1
-                
-                # Get the current image index
-                curIDX_x = int( splitC[2] ) 
-                curIDX_y = int( splitC[3] ) 
-                curIDX_z = int( splitC[4] ) 
-                    
-                # Fill the label volume
-                labelVol[ curIDX_x, curIDX_y, curIDX_z ] = curTissueClassID
-                
-                # Get the displacement vector
-                curDisplacement_x = float( splitC[6] ) - curIDX_x
-                curDisplacement_y = float( splitC[7] ) - curIDX_y
-                curDisplacement_z = float( splitC[8] ) - curIDX_z
-                
-                dvfVol[ curIDX_x, curIDX_y, curIDX_z, 0, 0 ] = curDisplacement_x
-                dvfVol[ curIDX_x, curIDX_y, curIDX_z, 0, 1 ] = curDisplacement_y
-                dvfVol[ curIDX_x, curIDX_y, curIDX_z, 0, 2 ] = curDisplacement_z
-                
+    if inputXCATDVFFileName.endswith('.gz'):
+        with gzip.open(inputXCATDVFFileName, mode='r') as f:
+            with io.TextIOWrapper(f, encoding='utf-8') as decoder:
+                processDVFTextFileContents( decoder, tissueClassDict, labelVol, dvfVol )
+    else:
+        with open(inputXCATDVFFileName, mode='r') as f:
+            processDVFTextFileContents( f, tissueClassDict, labelVol, dvfVol )
     
     if generateSlidingInOutMaskImages:
         # Split label image into inside/outside
