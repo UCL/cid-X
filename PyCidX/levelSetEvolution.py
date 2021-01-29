@@ -4,13 +4,21 @@
 import nibabelToSimpleITK as n2sConv
 import SimpleITK as sitk
 import nibabel as nib
-
+import numpy as np
 
 
 class LevelSetEvolution(object):
 
     def __init__( self, initialNibabelImage, speedNibabelImage ):
-        
+        """
+        Generate the level-set evolution object. It takes two images of the same size defining the speed of the levelset
+        as well as the initial
+
+        :param initialNibabelImage: The nibabel image holding the initial levelset, i.e. contour defined by the zero-
+                                    crossing
+        :param speedNibabelImage: The nibabel image holding the speed function.
+        """
+
         # The images
         # Only keep the converter objects
         self.n2sInitialImg = n2sConv.nibabelToSimpleITK( initialNibabelImage )
@@ -31,26 +39,27 @@ class LevelSetEvolution(object):
     
     
     def run(self):
-        # Call the pre-processing of the images (i.e. padding)
-        #self._preProcessImages()
-        
-                
-        ''' Pre-process: Convert images to 
-            1) simpleITK images
-            2) float32 and 
-            3) pad them with the zero-flux padding filter in the lower and upper z-direction
-        '''
-        
+        """
+        Run the relevant pre-processing of the given images and eventually the level-set evolution.
+        """
+
+        # Pre-process: Convert images to
+        #    1) simpleITK images
+        #    2) float32 and
+        #    3) pad them with the zero-flux padding filter in the lower and upper z-direction
+        #    4) resample to isotropic (lowest) resolution
         self.n2sInitialImg.convertToSITK()
         self.n2sSpeedlImg.convertToSITK()
-        
-        caster= sitk.CastImageFilter()
+
+        # Generate the caster object
+        caster = sitk.CastImageFilter()
         caster.SetOutputPixelType(sitk.sitkFloat32)
         
         # local SimpleITK version of speed and initial image 
         initialImg = caster.Execute( self.n2sInitialImg.sitkImg )
         speedImg   = caster.Execute( self.n2sSpeedlImg.sitkImg  )
-        
+
+        # Generate the image padder
         padder = sitk.ZeroFluxNeumannPadImageFilter()
         padder.SetPadLowerBound( [ 0, 0, self.paddingZ ] )
         padder.SetPadUpperBound( [ 0, 0, self.paddingZ ] )
@@ -58,30 +67,66 @@ class LevelSetEvolution(object):
         # Update the initial and the speed image with the padded version
         initialImg = padder.Execute( initialImg )
         speedImg   = padder.Execute( speedImg   )
-        
+
+        # Resample to isotropic image resolution
+        # resample to the lowest resolution
+        maxSpacing = np.max( initialImg.GetSpacing() )
+        initialImg = self._resampleToIsotropicResolution( initialImg, maxSpacing )
+        speedImg   = self._resampleToIsotropicResolution( speedImg, maxSpacing   )
+
         # Generate the level-set filter and feed it with the relevant parameters
         lsFilter = sitk.ShapeDetectionLevelSetImageFilter()
         lsFilter.SetCurvatureScaling( self.curvatureScaling )
         lsFilter.SetPropagationScaling( self.propagationScaling )
         lsFilter.SetNumberOfIterations( self.numberOfIterations )
         lsFilter.SetMaximumRMSError( self.maxRMSError )
-        
+        # eventually run the level-set evolution
         outLSImage = lsFilter.Execute( initialImg, speedImg )
         
-        # Perform some post-processing steps (i.e. cropping)
-        cropper = sitk.CropImageFilter()
-        cropper.SetLowerBoundaryCropSize( [ 0, 0, self.paddingZ ] )
-        cropper.SetUpperBoundaryCropSize( [ 0, 0, self.paddingZ ] )
-        
-        outLSImage = cropper.Execute( outLSImage )
-        
+        # Perform some post-processing steps (i.e. resample back to the original image geometry)
+        # Resample(Image image1, Image referenceImage, Transform transform, itk::simple::InterpolatorEnum interpolator, double defaultPixelValue=0.0, itk::simple::PixelIDValueEnum outputPixelType) -> Image
+        trafo = sitk.Euler3DTransform()
+        trafo.SetIdentity()
+        outLSImage = sitk.Resample( outLSImage, self.n2sInitialImg.sitkImg, trafo, sitk.sitkLinear )
+
         # convert the input image back to a nibabel one
         # Use the speed function since this is more likely to be of type double
         self.outLSImage = self.n2sSpeedlImg.pushSITKImageContentIntoOriginalNibabelData( outLSImage ) 
         
         
-        
-        
+    def _resampleToIsotropicResolution(self, sitkImageIn, resolutionInMM):
+        """
+        Resample the given input image to the given resolution. Keep the origin, spacing and direction as in the given
+        image. For now 3d input images and nearest-neighbour interpolation will be assumed.
+
+        :param sitkImageIn: The image that will be resampled.
+        :param resolutionInMM: The scalar of the final resolution of the returned image
+        :return: Resampled SITK image object
+        """
+
+        # Get the image size and spacing of the input image
+        origSize = sitkImageIn.GetSize()
+        origSpacing = sitkImageIn.GetSpacing()
+
+        # Define the output spacing and size
+        outSpacing = [resolutionInMM, resolutionInMM, resolutionInMM]
+        outSize = [int(np.ceil(origSize[0] * origSpacing[0] / outSpacing[0])),
+                   int(np.ceil(origSize[1] * origSpacing[1] / outSpacing[1])),
+                   int(np.ceil(origSize[2] * origSpacing[2] / outSpacing[2]))]
+
+        # Generate a simple transform that will be set to identity
+        idTransform = sitk.Euler3DTransform()
+        idTransform.SetIdentity()
+
+        # Resample
+        resampledImg = sitk.Resample( sitkImageIn, outSize, idTransform,
+                                      sitk.sitkNearestNeighbor,
+                                      sitkImageIn.GetOrigin(), outSpacing, sitkImageIn.GetDirection() )
+
+        return resampledImg
+
+
+
     def saveLSOutput(self, outFileName):
         
         if self.outLSImage is None:
