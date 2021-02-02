@@ -16,7 +16,7 @@ import XCATdvfPreProcessing as xPre
 import XCATdvfPostProcessing as xPost
 import convertXCATDVFTextFile
 import commandExecution as cmdEx
-
+import re
 
 
 
@@ -214,8 +214,12 @@ if __name__ == '__main__':
                 nib.save(lungMaskNii, warpedOutDir + 'lungMask.nii.gz')
 
             # Find all the files that match the defined pattern
-            dvfFileList      = glob( dvfDir + '*' + dvfPostFix )
-            dvfFileList_1toN = glob( dvfDir + '*' + '__dvf_dvfCor_1toN.nii.gz' )
+            # Globbing does not provide a correctly sorted list, furthermore it does not guarantee the order to be the
+            # same if two separate lists are generated. Hence here the inverse DVF file name is generated without
+            # globbing. File existence needs to be checked below.
+            dvfFileList = glob(dvfDir + '*' + dvfPostFix)
+            dvfFileList = sorted(dvfFileList, key=lambda e: int(re.findall('\d+',os.path.split(e)[-1].split(dvfPostFix)[0])[-1]) )
+            dvfFileList_1toN = list(map(lambda l: l.replace('Nto1', '1toN'), dvfFileList))
 
             for i in range( len( dvfFileList ) ):
                 
@@ -232,7 +236,8 @@ if __name__ == '__main__':
                     jacobianParams  = ' -trans ' + dvfFileList_1toN[i]
                     jacobianParams += ' -jac '   + curJacImgFile
                     
-                    cmdEx.runCommand( jacobianCMD, jacobianParams, logFileName=warpedOutDir + 'jacobianLog.txt', workDir=warpedOutDir, onlyPrintCommand=False )
+                    cmdEx.runCommand( jacobianCMD, jacobianParams, logFileName=warpedOutDir + 'jacobianLog.txt',
+                                      workDir=warpedOutDir, onlyPrintCommand=False )
                     
                     # Change the intensities of the reference image name
                     curJacNii = nib.load( curJacImgFile )
@@ -258,7 +263,8 @@ if __name__ == '__main__':
                 resampleParams += ' -trans ' + dvfFileList[i]
                 resampleParams += ' '        + additionalResampleParams
     
-                cmdEx.runCommand( resampleCMD, resampleParams, logFileName=warpedOutDir+'warpingLog.txt', workDir=warpedOutDir, onlyPrintCommand=False)
+                cmdEx.runCommand( resampleCMD, resampleParams, logFileName=warpedOutDir+'warpingLog.txt',
+                                  workDir=warpedOutDir, onlyPrintCommand=False)
                 
                 # Clean up the intermediate files
                 if os.path.exists( curScaledCTFileName ):
