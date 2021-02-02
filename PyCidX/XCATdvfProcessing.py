@@ -200,7 +200,7 @@ if __name__ == '__main__':
                     labelCount[i,1] = np.sum( lungLabels == i )
                     labelCount[i,0] = i
                 
-                lungMask[:,:,:] = 0
+                lungMask[:, :, :] = 0
                 
                 for i in range(2):
                     maxCountIDX = np.where( labelCount[:,1]  == np.max(labelCount[:,1]))
@@ -219,22 +219,28 @@ if __name__ == '__main__':
             # globbing. File existence needs to be checked below.
             dvfFileList = glob(dvfDir + '*' + dvfPostFix)
             dvfFileList = sorted(dvfFileList, key=lambda e: int(re.findall('\d+',os.path.split(e)[-1].split(dvfPostFix)[0])[-1]) )
-            dvfFileList_1toN = list(map(lambda l: l.replace('Nto1', '1toN'), dvfFileList))
 
-            for i in range( len( dvfFileList ) ):
+            for curDVFFileName_Nto1 in dvfFileList:
                 
                 # Extract the current file number from the file name using the given postfix
-                curNumber = int( dvfFileList[i].split('_to_frame')[1].split(dvfPostFix)[0] )
+                curNumber = int( curDVFFileName_Nto1.split('_to_frame')[1].split(dvfPostFix)[0] )
                 curOutputFileName = warpedOutDir + warpedOutBaseImgName + '_%04i.nii.gz' % curNumber
                 curScaledCTFileName = warpedOutDir + 'curScaled_%04i.nii.gz' % curNumber
                 curJacImgFile = warpedOutDir + 'jac%04i.nii.gz' % curNumber
 
                 if doLungCTIntensityScaling:
-                    
+                    # Check that the inverse DVF exists
+                    curDVFFileName_1toN = curDVFFileName_Nto1[0:curDVFFileName_Nto1.rfind('Nto1')] + '1toN' + curDVFFileName_Nto1[curDVFFileName_Nto1.rfind('Nto1') + 4:]
+
+                    if not os.path.exists( curDVFFileName_1toN ):
+                        print( "Error: Expected the DVF file {}, but could not find it here.".format(curDVFFileName_1toN) )
+                        print( "Cannot perform intensity scaling at this time point." )
+                        continue
+
                     # Calculate the Jacobian map if using
                     jacobianCMD = niftyRegBinDir + 'reg_jacobian'
-                    jacobianParams  = ' -trans ' + dvfFileList_1toN[i]
-                    jacobianParams += ' -jac '   + curJacImgFile
+                    jacobianParams = ' -trans ' + curDVFFileName_1toN
+                    jacobianParams += ' -jac ' + curJacImgFile
                     
                     cmdEx.runCommand( jacobianCMD, jacobianParams, logFileName=warpedOutDir + 'jacobianLog.txt',
                                       workDir=warpedOutDir, onlyPrintCommand=False )
@@ -249,8 +255,8 @@ if __name__ == '__main__':
                     scaling[scaling < 0.5] = 0.5
                     scaling[scaling > 1.5] = 1.5                    
                     
-                    scaledCTData = (ctNiiImage.get_data() + 1000.0 ) /scaling - 1000.0
-                    scaledCTNii  = nib.Nifti1Image(scaledCTData, ctNiiImage.affine)
+                    scaledCTData = (ctNiiImage.get_data() + 1000.0 ) / scaling - 1000.0
+                    scaledCTNii = nib.Nifti1Image(scaledCTData, ctNiiImage.affine)
                     nib.save( scaledCTNii, curScaledCTFileName )
                     
                     referenceImgName = curScaledCTFileName
@@ -275,10 +281,3 @@ if __name__ == '__main__':
         except: 
             print('ERROR: Batch warping of reference image failed')
             sys.exit(1)
-        
-    pass
-
-
-
-
-
