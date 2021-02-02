@@ -266,7 +266,7 @@ if __name__ == '__main__':
                 resampleParams  = ' -ref '   + referenceImgName
                 resampleParams += ' -flo '   + referenceImgName
                 resampleParams += ' -res '   + curOutputFileName
-                resampleParams += ' -trans ' + dvfFileList[i]
+                resampleParams += ' -trans ' + curDVFFileName_Nto1
                 resampleParams += ' '        + additionalResampleParams
     
                 cmdEx.runCommand( resampleCMD, resampleParams, logFileName=warpedOutDir+'warpingLog.txt',
