@@ -7,9 +7,15 @@ import nibabelToSimpleITK as n2s
 
 
 class SignedDistanceMap(object):
-    
+    '''
+    Class to calculate a signed distance map from a given nibabel image. Uses simple ITK.
+    '''
+
     def __init__( self, nibImageIn ):
-        self.n2sImg         = n2s.nibabelToSimpleITK( nibImageIn )
+        '''
+        @param nibImageIn: The nibabel input image from which the signed distance map will be calulcated
+        '''
+        self.nibImageIn = nibImageIn
         self.lowerThreshold = -9e10
         self.upperThreshold = 0                
         self.distMapImg     = None             # The output image
@@ -20,8 +26,8 @@ class SignedDistanceMap(object):
     
     def run(self):
         # Convert from nibabel first
-        sImg = self.n2sImg.convertToSITK()
-        
+        sImg = n2s.nibabelToSimpleITK.sitkImageFromNib( self.nibImageIn )
+
         # Threshold the image
         thresholder = sitk.BinaryThresholdImageFilter()
         thresholder.SetLowerThreshold( self.lowerThreshold )
@@ -45,8 +51,7 @@ class SignedDistanceMap(object):
             distMapImg = sitk.BinomialBlur( distMapImg, self.postFilterBinomialRepetitions )
         
         # Convert back to nibabel 
-        self.distMapImg = self.n2sImg.pushSITKImageContentIntoOriginalNibabelData( distMapImg )
-        
+        self.distMapImg = n2s.nibabelToSimpleITK.nibImageFromSITK( distMapImg )
         
     
     
