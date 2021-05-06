@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import SimpleITK
+
 import SimpleITK as sITK
 import nibabel as nib
 import numpy as np
@@ -43,7 +43,7 @@ class nibabelToSimpleITK(object):
         # Revert the re-ordering of the axes
         recoveredImgArray = np.transpose(recoveredImgArray, [2,1,0])
         
-        # Generate a nifti image
+        # Generate a new nifti image using the header information from the member object
         outNibImg = nib.Nifti1Image( recoveredImgArray , 
                                      self.nibImgIn.affine, 
                                      self.nibImgIn.header )
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     recoveredNibImg = nibabelToSimpleITK.nibImageFromSITK( convertedSITKImg )
     nib.save(recoveredNibImg, 'C:/debugData/cidX/resampled_only_follow_up_12_recNib.nii.gz')
 
-    cropper = SimpleITK.CropImageFilter()
+    cropper = sITK.CropImageFilter()
     cropper.SetUpperBoundaryCropSize([1, 2, 3])
     cropper.SetLowerBoundaryCropSize([4, 5, 6])
     cImg = cropper.Execute(convertedSITKImg)
