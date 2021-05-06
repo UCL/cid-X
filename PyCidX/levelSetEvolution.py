@@ -21,8 +21,8 @@ class LevelSetEvolution(object):
 
         # The images
         # Only keep the converter objects
-        self.n2sInitialImg = n2sConv.nibabelToSimpleITK( initialNibabelImage )
-        self.n2sSpeedlImg  = n2sConv.nibabelToSimpleITK( speedNibabelImage   )
+        self.initialNibIamge = initialNibabelImage
+        self.speedNibImage = speedNibabelImage
 
         # Default parameters
         self.maxRMSError        = 0.0005
@@ -48,16 +48,16 @@ class LevelSetEvolution(object):
         #    2) float32 and
         #    3) pad them with the zero-flux padding filter in the lower and upper z-direction
         #    4) resample to isotropic (lowest) resolution
-        self.n2sInitialImg.convertToSITK()
-        self.n2sSpeedlImg.convertToSITK()
+        # self.n2sInitialImg.convertToSITK()
+        # self.n2sSpeedlImg.convertToSITK()
 
         # Generate the caster object
         caster = sitk.CastImageFilter()
         caster.SetOutputPixelType(sitk.sitkFloat32)
         
         # local SimpleITK version of speed and initial image 
-        initialImg = caster.Execute( self.n2sInitialImg.sitkImg )
-        speedImg   = caster.Execute( self.n2sSpeedlImg.sitkImg  )
+        initialImg = caster.Execute( n2sConv.nibabelToSimpleITK.sitkImageFromNib( self.initialNibIamge ) )
+        speedImg   = caster.Execute( n2sConv.nibabelToSimpleITK.sitkImageFromNib( self.speedNibImage )  )
 
         # Generate the image padder
         padder = sitk.ZeroFluxNeumannPadImageFilter()
@@ -87,11 +87,12 @@ class LevelSetEvolution(object):
         # Resample(Image image1, Image referenceImage, Transform transform, itk::simple::InterpolatorEnum interpolator, double defaultPixelValue=0.0, itk::simple::PixelIDValueEnum outputPixelType) -> Image
         trafo = sitk.Euler3DTransform()
         trafo.SetIdentity()
-        outLSImage = sitk.Resample( outLSImage, self.n2sInitialImg.sitkImg, trafo, sitk.sitkLinear )
+        outLSImage = sitk.Resample( outLSImage, initialImg, trafo, sitk.sitkLinear )
 
         # convert the input image back to a nibabel one
+        self.outLSImage = n2sConv.nibabelToSimpleITK.nibImageFromSITK( outLSImage )
         # Use the speed function since this is more likely to be of type double
-        self.outLSImage = self.n2sSpeedlImg.pushSITKImageContentIntoOriginalNibabelData( outLSImage ) 
+        #self.outLSImage = self.n2sSpeedlImg.pushSITKImageContentIntoOriginalNibabelData( outLSImage )
         
         
     def _resampleToIsotropicResolution(self, sitkImageIn, resolutionInMM):
@@ -149,15 +150,10 @@ if __name__ == '__main__':
     lsOutImageName = 'C:/debugData/workflow-improv/preprocessOut/dvf_vec_frame1_to_frame2__LS.nii.gz'
 
     # Read the input images
-    initialImg = sitk.ReadImage( initialImgName )
-    speedImg   = sitk.ReadImage( speedImgName   )
-        
+    initialImg = nib.load( initialImgName )
+    speedImg = nib.load( speedImgName )
+
     lse = LevelSetEvolution( initialImg, speedImg )
     lse.numberOfIterations = 100
     lse.run()
-    lse.saveLSOutout( lsOutImageName )
-    
-
-
-
-
+    nib.save( lse.outLSImage, lsOutImageName )
