@@ -7,50 +7,6 @@ import numpy as np
 
 class nibabelToSimpleITK(object):
 
-    
-    def __init__( self, nibabelImageIn ):
-        self.nibImgIn = nibabelImageIn
-        self.sitkImg  = None
-        
-        if (self.nibImgIn.header['dim'][0] != 3):
-            print("WARNING: This class is currently only intended for 3D images")
-        
-        
-        
-        
-    def convertToSITK(self):
-        '''
-        Convert the member nibabel image to a member sitk one. Note, this is only required if data will be pushed back
-        into the member nibabel image - otherwise, the static methods may be sufficient.
-        '''
-
-        # Generate the image using the static method
-        self.sitkImg = self.sitkImageFromNib(self.nibImgIn)
-        return self.sitkImg
-
-        
-    
-    def pushSITKImageContentIntoOriginalNibabelData( self, sitkImgIn ):
-        '''
-        Push the image contents from the given sitk image into the nibabel member.
-
-        @param: sitkImgIn simple ITK image object which image contents is written to the nibabel (member) image contents.
-        '''
-
-        # Extract the image data from the SimpleITK image object
-        recoveredImgArray = sITK.GetArrayFromImage( sitkImgIn )
-        
-        # Revert the re-ordering of the axes
-        recoveredImgArray = np.transpose(recoveredImgArray, [2,1,0])
-        
-        # Generate a new nifti image using the header information from the member object
-        outNibImg = nib.Nifti1Image( recoveredImgArray , 
-                                     self.nibImgIn.affine, 
-                                     self.nibImgIn.header )
-        
-        return outNibImg
-
-
     @staticmethod
     def sitkImageFromNib( nibImageIn ):
         '''
