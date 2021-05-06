@@ -6,6 +6,10 @@ import numpy as np
 
 
 class nibabelToSimpleITK(object):
+    '''
+    Collection of methods to convert from nibabel to simpleITK and vice versa. Note: Only applicable for 3d images for
+    now.
+    '''
 
     @staticmethod
     def sitkImageFromNib( nibImageIn ):
@@ -69,18 +73,6 @@ class nibabelToSimpleITK(object):
 
 
 if __name__ == '__main__':
-    
-    # # Load the test image
-    # nImg = nib.load( 'D:/debugData/test_01_MCR.nii.gz' )
-    #
-    # # Generate the converter and perform the conversion
-    # converter = nibabelToSimpleITK( nImg )
-    # convertedSITKImg = converter.convertToSITK()
-    #
-    # # Revert the changes and save the image
-    # recoveredNibImg = converter.pushSITKImageContentIntoOriginalNibabelData(convertedSITKImg)
-    # nib.save( recoveredNibImg, 'D:/debugData/test_01_MCR_recovered.nii.gz' )
-    #
 
     # Conversion from SITK to nibabel
     nImg = nib.load( 'C:/debugData/cidX/resampled_only_follow_up_12.nii' )
@@ -88,19 +80,18 @@ if __name__ == '__main__':
     sReader.SetFileName('C:/debugData/cidX/resampled_only_follow_up_12.nii')
     sImg = sReader.Execute()
 
-    converter = nibabelToSimpleITK( nImg )
-    convertedSITKImg = converter.convertToSITK()
+    # Convert nibabel to simple ITK
+    convertedSITKImg = nibabelToSimpleITK.sitkImageFromNib( nImg )
 
-    sWriter = sITK.ImageFileWriter()
-    sWriter.SetFileName( 'C:/debugData/cidX/resampled_only_follow_up_12_recSITK.nii.gz' )
-    sWriter.Execute( convertedSITKImg )
+    # Convert simpleITK back to nibabel
     recoveredNibImg = nibabelToSimpleITK.nibImageFromSITK( convertedSITKImg )
     nib.save(recoveredNibImg, 'C:/debugData/cidX/resampled_only_follow_up_12_recNib.nii.gz')
 
+    # Check a simpleITK filter and save the converted nibabel image
     cropper = sITK.CropImageFilter()
     cropper.SetUpperBoundaryCropSize([1, 2, 3])
     cropper.SetLowerBoundaryCropSize([4, 5, 6])
-    cImg = cropper.Execute(convertedSITKImg)
-    ncImg = nibabelToSimpleITK.nibImageFromSITK(cImg)
+    cImg = cropper.Execute( convertedSITKImg )
+    ncImg = nibabelToSimpleITK.nibImageFromSITK( cImg )
     nib.save(ncImg, 'C:/debugData/cidX/resampled_only_follow_up_12_recNib_cropped.nii.gz')
 
