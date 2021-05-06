@@ -164,30 +164,31 @@ class XCATdvfPreProcessing( object ):
         except:
             print(" Error: Configuration failed! ")
             print(" ")
-            print(" Required (and optional) configuration contents:")
-            print(" ")
-            print("[PREPROCESSING]")
-            print("xcatAtnFile       = /path/to/XCAT_binaryVolume.bin")
-            print("xcatDVFFile       = /path/to/XCAT_dvf_text_file_vec_frame1_to_frameAny.txt")
-            print("outDir            = /path/to/where/files/will/be/written/")
-            print("outDistMapImgName = distMapImageFileName.nii.gz")
-            print("outXCATAtnImgName = convertedXCATBinaryImage.nii.gz")
-            print("numVoxX           = 123    # number of voxels in x-direction")
-            print("numVoxY           = 123    # number of voxels in y-direction")
-            print("numVoxZ           = 123    # number of voxels in z-direction")
-            print("spacingX          = 1.23   # spacing in x-direction")
-            print("spacingY          = 1.23   # spacing in x-direction")
-            print("spacingZ          = 1.23   # spacing in x-direction")
-            print(" ")
-            print("# Optional ")
-            print("numberOfLevelSetIterations = 123   # number of iterations of the LS evolution")
-            print("outLevelSetImgName         = levelSetImageFileName.nii.gz.nii.gz ")
-            print("saveLevelSetImage          = 0   # Can be 0, false, no to not save the image")
+            self.printUsage()
 
             sys.exit(1)
-        
-            
 
+    @staticmethod
+    def printUsage(self):
+        print(" Required (and optional) configuration contents:")
+        print(" ")
+        print("[PREPROCESSING]")
+        print("xcatAtnFile       = /path/to/XCAT_binaryVolume.bin")
+        print("xcatDVFFile       = /path/to/XCAT_dvf_text_file_vec_frame1_to_frameAny.txt")
+        print("outDir            = /path/to/where/files/will/be/written/")
+        print("outDistMapImgName = distMapImageFileName.nii.gz")
+        print("outXCATAtnImgName = convertedXCATBinaryImage.nii.gz")
+        print("numVoxX           = 123    # number of voxels in x-direction")
+        print("numVoxY           = 123    # number of voxels in y-direction")
+        print("numVoxZ           = 123    # number of voxels in z-direction")
+        print("spacingX          = 1.23   # spacing in x-direction")
+        print("spacingY          = 1.23   # spacing in x-direction")
+        print("spacingZ          = 1.23   # spacing in x-direction")
+        print(" ")
+        print("# Optional ")
+        print("numberOfLevelSetIterations = 123   # number of iterations of the LS evolution")
+        print("outLevelSetImgName         = levelSetImageFileName.nii.gz.nii.gz ")
+        print("saveLevelSetImage          = 0   # Can be 0, false, no to not save the image")
 
 
 if __name__ == "__main__":
@@ -214,22 +215,7 @@ if __name__ == "__main__":
     except:
         print(" Required configuration file contents:")
         print(" ")
-        print("[PREPROCESSING]")
-        print("xcatAtnFile       = /path/to/XCAT_binaryVolume.bin")
-        print("xcatDVFFile       = /path/to/XCAT_dvf_text_file_vec_frame1_to_frameAny.txt")
-        print("outDir            = /path/to/where/files/will/be/written/")
-        print("outDistMapImgName = distMapImageFileName.nii.gz")
-        print("numVoxX           = 123    # number of voxels in x-direction")
-        print("numVoxY           = 123    # number of voxels in y-direction")
-        print("numVoxZ           = 123    # number of voxels in z-direction")
-        print("spacingX          = 1.23   # spacing in x-direction")
-        print("spacingY          = 1.23   # spacing in x-direction")
-        print("spacingZ          = 1.23   # spacing in x-direction")
-        print(" ")
-        print("# Optional ")
-        print("numberOfLevelSetIterations = 123   # number of iterations of the LS evolution")
-        print("outLevelSetImgName         = levelSetImageFileName.nii.gz.nii.gz ")
-        print("saveLevelSetImage          = 0   # Can be 0, false, no to not save the image")
+        XCATdvfPreProcessing.printUsage()
         sys.exit(1)
 
 
@@ -237,4 +223,4 @@ if __name__ == "__main__":
     preProcessor = XCATdvfPreProcessing()
     preProcessor.configureByParser( parser )
     preProcessor.run()
-    
+
