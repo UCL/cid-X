@@ -3,7 +3,7 @@
 import SimpleITK as sitk
 import numpy as np
 import nibabel as nib
-import nibabelToSimpleITK as n2s
+import PyCidX.nibabelToSimpleITK as n2s
 
 
 class SignedDistanceMap(object):
@@ -15,7 +15,7 @@ class SignedDistanceMap(object):
         '''
         @param nibImageIn: The nibabel input image from which the signed distance map will be calulcated
         '''
-        self.nibImageIn = nibImageIn
+        self.nibImageIn     = nibImageIn
         self.lowerThreshold = -9e10
         self.upperThreshold = 0                
         self.distMapImg     = None             # The output image

@@ -5,12 +5,12 @@ import os
 import nibabel as nib
 from scipy.ndimage import distance_transform_edt, gaussian_filter
 import numpy as np
-import displacementVectorFieldTools as dvfTools
-import commandExecution
-import finiteDifferences as fd
-import diffuseFixedValuesIntoMask as diffusor
-import findExecutable
-import signedDistanceMap as sdt
+import PyCidX.displacementVectorFieldTools as dvfTools
+import PyCidX.commandExecution as commandExecution  
+import PyCidX.finiteDifferences as fd
+import PyCidX.diffuseFixedValuesIntoMask as diffusor
+import PyCidX.findExecutable as findExecutable
+import PyCidX.signedDistanceMap as sdt
 
 
 def _processDVF( mask, voxelSize, dvfExt, fallOffDist, gaussianPreSmoothingRadius = 5.0):
@@ -165,8 +165,8 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
 
         # Calculate the gradient of the original SDT
         finDif = fd.finiteDifferences3D( voxelSize[0], voxelSize[1], voxelSize[2], 'central' )
-        sdt_1_dx = np.zeros_like( sdt_1_Nii.get_data() )
-        finDif.diffX( sdt_1_Nii.get_data(), sdt_1_dx )
+        sdt_1_dx = np.zeros_like( sdt_1_Nii.get_fdata() )
+        finDif.diffX( sdt_1_Nii.get_fdata(), sdt_1_dx )
         try: 
             sdtDx_1_nii = nib.Nifti1Image( sdt_1_dx, sdt_1_Nii.affine, sdt_1_Nii.header )
         except:
@@ -179,8 +179,8 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
 
         # Calculate the gradient of the original SDT
         finDif = fd.finiteDifferences3D( voxelSize[0], voxelSize[1], voxelSize[2], 'central' )
-        sdt_1_dy = np.zeros_like( sdt_1_Nii.get_data() )
-        finDif.diffY( sdt_1_Nii.get_data(), sdt_1_dy )
+        sdt_1_dy = np.zeros_like( sdt_1_Nii.get_fdata() )
+        finDif.diffY( sdt_1_Nii.get_fdata(), sdt_1_dy )
         try:
             sdtDy_1_nii = nib.Nifti1Image( sdt_1_dy, sdt_1_Nii.affine, sdt_1_Nii.header )
         except:
@@ -193,8 +193,8 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
 
         # Calculate the gradient of the original SDT
         finDif = fd.finiteDifferences3D( voxelSize[0], voxelSize[1], voxelSize[2], 'central' )
-        sdt_1_dz = np.zeros_like( sdt_1_Nii.get_data() )
-        finDif.diffZ( sdt_1_Nii.get_data(), sdt_1_dz )
+        sdt_1_dz = np.zeros_like( sdt_1_Nii.get_fdata() )
+        finDif.diffZ( sdt_1_Nii.get_fdata(), sdt_1_dz )
         try:
             sdtDz_1_nii = nib.Nifti1Image( sdt_1_dz, sdt_1_Nii.affine, sdt_1_Nii.header )
         except:
@@ -205,9 +205,9 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
     
     # Split the DVF into inside/outside and extend, then save as nifti images
     print("  ... -> extending inside DVF")
-    dvfInExtended_1toN  = _processDVF( sdt_1_Nii.get_data() <  0, voxelSize, dvf_1toN_Nii.get_data().copy(), fallOffDist, guassianPreSmoothingRadius )
+    dvfInExtended_1toN  = _processDVF( sdt_1_Nii.get_fdata() <  0, voxelSize, dvf_1toN_Nii.get_fdata().copy(), fallOffDist, guassianPreSmoothingRadius )
     print("  ... -> extending outside DVF")
-    dvfOutExtended_1toN = _processDVF( sdt_1_Nii.get_data() >= 0, voxelSize, dvf_1toN_Nii.get_data().copy(), fallOffDist, guassianPreSmoothingRadius )
+    dvfOutExtended_1toN = _processDVF( sdt_1_Nii.get_fdata() >= 0, voxelSize, dvf_1toN_Nii.get_fdata().copy(), fallOffDist, guassianPreSmoothingRadius )
     try:
         dvfInExtended_1toN_Nii  = nib.Nifti1Image( dvfInExtended_1toN,  dvf_1toN_Nii.affine, header=dvf_1toN_Nii.header )
         dvfOutExtended_1toN_Nii = nib.Nifti1Image( dvfOutExtended_1toN, dvf_1toN_Nii.affine, header=dvf_1toN_Nii.header )
@@ -263,8 +263,8 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
     
     # Calculate the gap and overlap measures and save as nifti images 
     # pulled into #N
-    sdtInOutProd_N = sdtIn_N_nii.get_data() * sdtOut_N_nii.get_data()
-    sdtInOutSum_N  = sdtIn_N_nii.get_data() + sdtOut_N_nii.get_data()
+    sdtInOutProd_N = sdtIn_N_nii.get_fdata() * sdtOut_N_nii.get_fdata()
+    sdtInOutSum_N  = sdtIn_N_nii.get_fdata() + sdtOut_N_nii.get_fdata()
     
     try:
         sdtInOutProd_N_nii = nib.Nifti1Image( sdtInOutProd_N, sdtIn_N_nii.affine )
@@ -335,14 +335,14 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
     # with enforced values where gaps/overlaps occur
     sdt_N_nii = nib.load( sdt_N_NiiFileName )
     
-    distDiffIn_N  = sdtIn_N_nii.get_data()  - sdt_N_nii.get_data()
-    distDiffOut_N = sdtOut_N_nii.get_data() - sdt_N_nii.get_data()
+    distDiffIn_N  = sdtIn_N_nii.get_fdata()  - sdt_N_nii.get_fdata()
+    distDiffOut_N = sdtOut_N_nii.get_fdata() - sdt_N_nii.get_fdata()
     
     del sdtIn_N_nii, sdtOut_N_nii
     
     print("  ... -> diffusing correction factor for sliding-preserving correction")
-    newDistEnforcementFactor = np.zeros_like( sdt_N_nii.get_data() )
-    idxToCorrect = np.where(sdtInOutProd_N_nii.get_data() < 0)
+    newDistEnforcementFactor = np.zeros_like( sdt_N_nii.get_fdata() )
+    idxToCorrect = np.where(sdtInOutProd_N_nii.get_fdata() < 0)
     newDistEnforcementFactor[idxToCorrect] = 1
     
     dfvim = diffusor.diffuseFixedValuesIntoMask(newDistEnforcementFactor, newDistEnforcementFactor, voxelSize, 50)
@@ -354,31 +354,31 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
     
     del newDistEnforcementFactor, distDiffIn_N, distDiffOut_N
      
-    normFac = np.sqrt(sdt1dx_in_N_nii.get_data()**2 + sdt1dy_in_N_nii.get_data()**2+sdt1dz_in_N_nii.get_data()**2)
+    normFac = np.sqrt(sdt1dx_in_N_nii.get_fdata()**2 + sdt1dy_in_N_nii.get_fdata()**2+sdt1dz_in_N_nii.get_fdata()**2)
     normFac[np.where(normFac==0)]=1
     
     dvfInExt_Nto1_nii  = nib.load( dvfInExt_Nto1_fileName  )
-    dvfInExtCor_Nto1 = dvfInExt_Nto1_nii.get_data().copy()
-    dvfInExtCor_Nto1[:,:,:,0,0] = dvfInExtCor_Nto1[:,:,:,0,0] + corFactIn * sdt1dx_in_N_nii.get_data() / normFac
-    dvfInExtCor_Nto1[:,:,:,0,1] = dvfInExtCor_Nto1[:,:,:,0,1] + corFactIn * sdt1dy_in_N_nii.get_data() / normFac
-    dvfInExtCor_Nto1[:,:,:,0,2] = dvfInExtCor_Nto1[:,:,:,0,2] - corFactIn * sdt1dz_in_N_nii.get_data() / normFac
+    dvfInExtCor_Nto1 = dvfInExt_Nto1_nii.get_fdata().copy()
+    dvfInExtCor_Nto1[:,:,:,0,0] = dvfInExtCor_Nto1[:,:,:,0,0] + corFactIn * sdt1dx_in_N_nii.get_fdata() / normFac
+    dvfInExtCor_Nto1[:,:,:,0,1] = dvfInExtCor_Nto1[:,:,:,0,1] + corFactIn * sdt1dy_in_N_nii.get_fdata() / normFac
+    dvfInExtCor_Nto1[:,:,:,0,2] = dvfInExtCor_Nto1[:,:,:,0,2] - corFactIn * sdt1dz_in_N_nii.get_fdata() / normFac
     
     del sdt1dx_in_N_nii, sdt1dy_in_N_nii, sdt1dz_in_N_nii, normFac, corFactIn
     
-    normFac = np.sqrt(sdt1dx_out_N_nii.get_data()**2 + sdt1dy_out_N_nii.get_data()**2+sdt1dz_out_N_nii.get_data()**2)
+    normFac = np.sqrt(sdt1dx_out_N_nii.get_fdata()**2 + sdt1dy_out_N_nii.get_fdata()**2+sdt1dz_out_N_nii.get_fdata()**2)
     normFac[np.where(normFac==0)]=1
     
     dvfOutExt_Nto1_nii = nib.load( dvfOutExt_Nto1_fileName )
-    dvfOutExtCor_Nto1 = dvfOutExt_Nto1_nii.get_data().copy()
-    dvfOutExtCor_Nto1[:,:,:,0,0] = dvfOutExtCor_Nto1[:,:,:,0,0] + corFactOut * sdt1dx_out_N_nii.get_data() / normFac
-    dvfOutExtCor_Nto1[:,:,:,0,1] = dvfOutExtCor_Nto1[:,:,:,0,1] + corFactOut * sdt1dy_out_N_nii.get_data() / normFac
-    dvfOutExtCor_Nto1[:,:,:,0,2] = dvfOutExtCor_Nto1[:,:,:,0,2] - corFactOut * sdt1dz_out_N_nii.get_data() / normFac
+    dvfOutExtCor_Nto1 = dvfOutExt_Nto1_nii.get_fdata().copy()
+    dvfOutExtCor_Nto1[:,:,:,0,0] = dvfOutExtCor_Nto1[:,:,:,0,0] + corFactOut * sdt1dx_out_N_nii.get_fdata() / normFac
+    dvfOutExtCor_Nto1[:,:,:,0,1] = dvfOutExtCor_Nto1[:,:,:,0,1] + corFactOut * sdt1dy_out_N_nii.get_fdata() / normFac
+    dvfOutExtCor_Nto1[:,:,:,0,2] = dvfOutExtCor_Nto1[:,:,:,0,2] - corFactOut * sdt1dz_out_N_nii.get_fdata() / normFac
     
     del sdt1dx_out_N_nii, sdt1dy_out_N_nii, sdt1dz_out_N_nii, normFac, corFactOut
     
     # Copy inside DVF, fill in the out DVF where appropriate
     dvfCor_Nto1 = dvfInExtCor_Nto1.copy()
-    idxOutside=np.where( sdt_N_nii.get_data()>=0 )
+    idxOutside=np.where( sdt_N_nii.get_fdata()>=0 )
     dvfCor_Nto1[:,:,:,0,0][idxOutside] = dvfOutExtCor_Nto1[:,:,:,0,0][idxOutside] 
     dvfCor_Nto1[:,:,:,0,1][idxOutside] = dvfOutExtCor_Nto1[:,:,:,0,1][idxOutside] 
     dvfCor_Nto1[:,:,:,0,2][idxOutside] = dvfOutExtCor_Nto1[:,:,:,0,2][idxOutside] 
@@ -426,13 +426,13 @@ def XCATdvfPostProcessing( XCATDVFNiiFileName,
         
         dvfInExtCor_1toN_nii  = nib.load( dvfInExtCor_1toN_fileName  )
         dvfOutExtCor_1toN_nii = nib.load( dvfOutExtCor_1toN_fileName )
-        idxOutside = np.where( sdt_1_Nii.get_data() >= 0 )
+        idxOutside = np.where( sdt_1_Nii.get_fdata() >= 0 )
         
         # copy inside, replace outside
-        dvfCor_1toN = dvfInExtCor_1toN_nii.get_data().copy()
-        dvfCor_1toN[:,:,:,0,0][idxOutside]  = dvfOutExtCor_1toN_nii.get_data()[:,:,:,0,0][idxOutside]
-        dvfCor_1toN[:,:,:,0,1][idxOutside]  = dvfOutExtCor_1toN_nii.get_data()[:,:,:,0,1][idxOutside]
-        dvfCor_1toN[:,:,:,0,2][idxOutside]  = dvfOutExtCor_1toN_nii.get_data()[:,:,:,0,2][idxOutside]
+        dvfCor_1toN = dvfInExtCor_1toN_nii.get_fdata().copy()
+        dvfCor_1toN[:,:,:,0,0][idxOutside]  = dvfOutExtCor_1toN_nii.get_fdata()[:,:,:,0,0][idxOutside]
+        dvfCor_1toN[:,:,:,0,1][idxOutside]  = dvfOutExtCor_1toN_nii.get_fdata()[:,:,:,0,1][idxOutside]
+        dvfCor_1toN[:,:,:,0,2][idxOutside]  = dvfOutExtCor_1toN_nii.get_fdata()[:,:,:,0,2][idxOutside]
         
         try:
             dvfCor_1toN_nii = nib.Nifti1Image( dvfCor_1toN, dvfInExt_Nto1_nii.affine, header=dvfInExt_Nto1_nii.header )
