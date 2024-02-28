@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # My imports
-import nibabelToSimpleITK as n2sConv
+import PyCidX.nibabelToSimpleITK as n2sConv
 import SimpleITK as sitk
 import nibabel as nib
 import numpy as np
@@ -65,14 +65,14 @@ class LevelSetEvolution(object):
         padder.SetPadUpperBound( [ 0, 0, self.paddingZ ] )
         
         # Update the initial and the speed image with the padded version
-        initialImg = padder.Execute( initialImg )
-        speedImg   = padder.Execute( speedImg   )
+        initialPadImg = padder.Execute( initialImg )
+        speedImg      = padder.Execute( speedImg   )
 
         # Resample to isotropic image resolution
         # resample to the lowest resolution
         maxSpacing = np.max( initialImg.GetSpacing() )
-        initialImg = self._resampleToIsotropicResolution( initialImg, maxSpacing )
-        speedImg   = self._resampleToIsotropicResolution( speedImg, maxSpacing   )
+        initialPadImg = self._resampleToIsotropicResolution( initialPadImg, maxSpacing )
+        speedImg      = self._resampleToIsotropicResolution( speedImg, maxSpacing   )
 
         # Generate the level-set filter and feed it with the relevant parameters
         lsFilter = sitk.ShapeDetectionLevelSetImageFilter()
@@ -81,7 +81,7 @@ class LevelSetEvolution(object):
         lsFilter.SetNumberOfIterations( self.numberOfIterations )
         lsFilter.SetMaximumRMSError( self.maxRMSError )
         # eventually run the level-set evolution
-        outLSImage = lsFilter.Execute( initialImg, speedImg )
+        outLSImage = lsFilter.Execute( initialPadImg, speedImg )
         
         # Perform some post-processing steps (i.e. resample back to the original image geometry)
         # Resample(Image image1, Image referenceImage, Transform transform, itk::simple::InterpolatorEnum interpolator, double defaultPixelValue=0.0, itk::simple::PixelIDValueEnum outputPixelType) -> Image
