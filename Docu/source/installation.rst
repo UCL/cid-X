@@ -1,8 +1,8 @@
-# Installation
+Installation
+============
 
-
-## Requirements
-
+Requirements
+------------
 
 Currently, only python version 3 is supported, and the package was developed with 3.6 and tested with version 3.9.13.
 Python packages beyond the standard modules needed are listed below and also defined in the file ``requirements.txt`` in 
@@ -24,20 +24,28 @@ Either add the directory that contains those executables to the system path, or 
 these to your path, please define the path in the configuration file in section ``BATCH_POSTPROCESSING`` to the variable
 ``niftyRegBinDir``.
 
-## Obtain the python sources and a first dry-run
+
+Obtain the python sources and a first dry-run
+---------------------------------------------
 
 Get the python source code of from `github <https://github.com/UCL/cid-X>`_. Clone the repository or download the zip
 file.
 
-## Optional (but recommended): Set up a virtual environment 
+Set up a virtual environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the commands below the environment is called ``.venv`` and the defined requirements will be installed into this. 
+This step is optional, but recommended. 
+With the commands below a virtual environment called ``.venv`` is created and the defined requirements 
+will be installed into this environment. 
 
 * Open a command-prompt such as ``bash`` in the base directory of the repository
 * Create the virtual environment by running ``python –m venv .venv``
 * Activate the virtual environment: ``source .venv/bin/activate`` or equivalent
 * Install the requirements into the virtual environment ``pip install –r requirements.txt`` 
 
+
+Initial check
+^^^^^^^^^^^^^
 
 Make sure that you have everything in place by
 
