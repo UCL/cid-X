@@ -8,10 +8,10 @@
 import sys
 import numpy as np
 import os
-import convertXCATBinaryFile as cxbf
-import convertXCATDVFTextFile as cxdt
-import levelSetEvolution as lse
-import signedDistanceMap as sdt
+from PyCidX import convertXCATBinaryFile
+from PyCidX import convertXCATDVFTextFile as cxdt
+import PyCidX.levelSetEvolution as lse
+import PyCidX.signedDistanceMap as sdt
 import nibabel as nib
 import configparser as cfp
 
@@ -67,20 +67,20 @@ class XCATdvfPreProcessing( object ):
         pass
         
         # Convert the binary/structural image into nifti format
-        atnNiiFileName = cxbf.convertXCATBinaryFile( self.xcatAtnFile, 
-                                                     self.outDir, 
-                                                     self.imageDimension, 
-                                                     self.voxelSpacing, 
-                                                     False, 
-                                                     self.outXCATAtnImgName )
+        atnNiiFileName = convertXCATBinaryFile( self.xcatAtnFile, 
+                                                self.outDir, 
+                                                self.imageDimension, 
+                                                self.voxelSpacing, 
+                                                False, 
+                                                self.outXCATAtnImgName )
         
         if self.outXCATCTImgName is not None:
-            cxbf.convertXCATBinaryFile( self.xcatAtnFile, 
-                                        self.outDir, 
-                                        self.imageDimension, 
-                                        self.voxelSpacing, 
-                                        True, 
-                                        self.outXCATCTImgName )
+            convertXCATBinaryFile( self.xcatAtnFile, 
+                                   self.outDir, 
+                                   self.imageDimension, 
+                                   self.voxelSpacing, 
+                                   True, 
+                                   self.outXCATCTImgName )
 
         
         
@@ -119,8 +119,6 @@ class XCATdvfPreProcessing( object ):
         return
     
     
-    
-    
     def configureByParser( self, parserIn ):
 
         try:
@@ -135,7 +133,7 @@ class XCATdvfPreProcessing( object ):
             if 'outXCATCTImgName' in parserIn['PREPROCESSING'].keys() :
                 self.outXCATCTImgName =  parserIn[ 'PREPROCESSING' ][ 'outXCATCTImgName' ]
 
-            self.imageDimension    = np.array( [0,0,0], dtype=np.int )
+            self.imageDimension    = np.array( [0,0,0], dtype=np.int32 )
             self.voxelSpacing      = np.array( [0.0, 0.0, 0.0] )
 
             self.imageDimension[0] = int( parserIn['PREPROCESSING']['numVoxX'] )

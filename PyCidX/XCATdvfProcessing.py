@@ -9,40 +9,19 @@ sys.path.append( os.path.dirname( __file__ ) )
 
 from glob import glob
 from scipy.ndimage import label
+import re
 import numpy as np
 import configparser as cfp
 import nibabel as nib
-import XCATdvfPreProcessing as xPre
-import XCATdvfPostProcessing as xPost
-import convertXCATDVFTextFile
-import commandExecution as cmdEx
-import re
+import PyCidX.XCATdvfPreProcessing as xPre
+import PyCidX.XCATdvfPostProcessing as xPost
+import PyCidX.convertXCATDVFTextFile as convertXCATDVFTextFile
+import PyCidX.commandExecution as cmdEx
 
 
 
-# Main entry point to post-processing framework
-if __name__ == '__main__':
-    print( "Tool to post-process XCAT DVF text files." )
-    
-    if len(sys.argv) < 2:
-        print("Usage: XCATdvfProcessing.py pathToConfigFile")
-        print("        - pathToConfigFile     -> Path to the configuration file that contains all parameters for processing")
-        print(" ")
-        
-        print(" ")
-        sys.exit()
-    
-    # Read the config file 
-    configFileNameIn = sys.argv[1]
-    parser = cfp.ConfigParser()
+def processMain(parser:cfp.ConfigParser):
 
-    try:
-        parser.read( configFileNameIn )
-    except:
-        print("Could not read configuration file")
-        sys.exit(1)
-
-    
     # Determine the processing steps that need to be performed
     doPreProcessing       = False
     doBatchPostProcessing = False
@@ -87,12 +66,12 @@ if __name__ == '__main__':
             
             
             # Retrieve data from pre-processing section
-            imageSize    = np.array([0,0,0], dtype=np.int   )
+            imageSize    = np.array([0,0,0], dtype=np.int32   )
             imageSize[0] = parser['PREPROCESSING']['numVoxX']
             imageSize[1] = parser['PREPROCESSING']['numVoxY']
             imageSize[2] = parser['PREPROCESSING']['numVoxZ']
 
-            imageSpacing = np.array([0,0,0], dtype=np.float )
+            imageSpacing = np.array([0,0,0], dtype=np.float32 )
             imageSpacing[0] = parser['PREPROCESSING']['spacingX']
             imageSpacing[1] = parser['PREPROCESSING']['spacingY']
             imageSpacing[2] = parser['PREPROCESSING']['spacingZ']
@@ -187,7 +166,7 @@ if __name__ == '__main__':
                 lungUpperThreshold = float( parser['BATCH_WARPING']['lungUpperThreshold'] )
                 
                 # Perform the thresholding
-                imgData = ctNiiImage.get_data()
+                imgData = ctNiiImage.get_fdata()
                 lungMask = (imgData > lungLowerThreshold) & (imgData < lungUpperThreshold)
                 
                 # find the two largest connected components by first labelling the image data
@@ -248,14 +227,14 @@ if __name__ == '__main__':
                     # Change the intensities of the reference image name
                     curJacNii = nib.load( curJacImgFile )
                     
-                    scaling = np.ones_like( ctNiiImage.get_data() )
-                    scaling[ lungMask ] = curJacNii.get_data()[ lungMask ] 
+                    scaling = np.ones_like( ctNiiImage.get_fdata() )
+                    scaling[ lungMask ] = curJacNii.get_fdata()[ lungMask ] 
                     
                     # Limit unrealistic scaling
                     scaling[scaling < 0.5] = 0.5
                     scaling[scaling > 1.5] = 1.5                    
                     
-                    scaledCTData = (ctNiiImage.get_data() + 1000.0 ) / scaling - 1000.0
+                    scaledCTData = (ctNiiImage.get_fdata() + 1000.0 ) / scaling - 1000.0
                     scaledCTNii = nib.Nifti1Image(scaledCTData, ctNiiImage.affine)
                     nib.save( scaledCTNii, curScaledCTFileName )
                     
@@ -281,3 +260,32 @@ if __name__ == '__main__':
         except: 
             print('ERROR: Batch warping of reference image failed')
             sys.exit(1)
+
+    pass
+
+
+# Main entry point to post-processing framework
+if __name__ == '__main__':
+    print( "Tool to post-process XCAT DVF text files." )
+    
+    if len(sys.argv) < 2:
+        print("Usage: XCATdvfProcessing.py pathToConfigFile")
+        print("        - pathToConfigFile     -> Path to the configuration file that contains all parameters for processing")
+        print(" ")
+        
+        print(" ")
+        sys.exit()
+    
+    # Read the config file 
+    configFileNameIn = sys.argv[1]
+    parser = cfp.ConfigParser()
+
+    try:
+        parser.read( configFileNameIn )
+    except:
+        print("Could not read configuration file")
+        sys.exit(1)
+
+    processMain(parser)
+
+    

@@ -284,9 +284,9 @@ def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName,
             
             curTissueIDXs = np.where( labelVol == tissueClassDict[ curTissueClass ] )
             
-            tissueClassIntensityDict[curTissueClass] = np.array( [ np.min ( structuralNii.get_data()[ curTissueIDXs ] ),
-                                                                   np.mean( structuralNii.get_data()[ curTissueIDXs ] ),
-                                                                   np.max ( structuralNii.get_data()[ curTissueIDXs ] ) ] )
+            tissueClassIntensityDict[curTissueClass] = np.array( [ np.min ( structuralNii.get_fdata()[ curTissueIDXs ] ),
+                                                                   np.mean( structuralNii.get_fdata()[ curTissueIDXs ] ),
+                                                                   np.max ( structuralNii.get_fdata()[ curTissueIDXs ] ) ] )
             
             # Accumulate rib and lung intensities for averaging
             if curTissueClass.find('rib') != -1:
@@ -315,14 +315,14 @@ def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName,
         
         print( "  ... Adding thresholded structures from image (e.g. lung and spine) ..." )
         boneThreshold = 0.5 * ( meanRibIntensity + maxKnownInsideMeanIntensityValue)
-        labelOutsideVol[ np.where(structuralNii.get_data() >= boneThreshold ) ]=1;
+        labelOutsideVol[ np.where(structuralNii.get_fdata() >= boneThreshold ) ]=1;
         
         lungLowerThreshold = meanMinLungIntensity * 0.98
         lungUpperThreshold = meanMinLungIntensity * 1.02
         
-        lungVol = np.zeros_like( structuralNii.get_data() )
+        lungVol = np.zeros_like( structuralNii.get_fdata() )
         
-        lungVol[np.where( (structuralNii.get_data() >=lungLowerThreshold) & (structuralNii.get_data() <=lungUpperThreshold ))] = 1
+        lungVol[np.where( (structuralNii.get_fdata() >=lungLowerThreshold) & (structuralNii.get_fdata() <=lungUpperThreshold ))] = 1
         lungVol = binary_erosion(lungVol).astype(lungVol.dtype)
         
         # Allow 10 mm above most superior index 
@@ -347,8 +347,8 @@ def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName,
 
     if generateDVFNiiFile:
         # Calculate a mask image from the structural one and find the region outside which needs to be replaced with the closest inside values
-        maskData = np.ones_like( structuralNii.get_data() )
-        maskData[ np.where(structuralNii.get_data() > np.min(structuralNii.get_data()[structuralNii.get_data()!=0])) ] = 0
+        maskData = np.ones_like( structuralNii.get_fdata() )
+        maskData[ np.where(structuralNii.get_fdata() > np.min(structuralNii.get_fdata()[structuralNii.get_fdata()!=0])) ] = 0
         
         maskData = binary_dilation(maskData).astype(maskData.dtype)
         indices = distance_transform_edt( maskData, voxelSize, return_distances=False, return_indices=True )
