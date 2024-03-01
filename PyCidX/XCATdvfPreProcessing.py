@@ -8,7 +8,7 @@
 import sys
 import numpy as np
 import os
-from PyCidX import convertXCATBinaryFile
+from PyCidX import convertXCATBinaryFile as cxbf
 from PyCidX import convertXCATDVFTextFile as cxdt
 import PyCidX.levelSetEvolution as lse
 import PyCidX.signedDistanceMap as sdt
@@ -67,20 +67,20 @@ class XCATdvfPreProcessing( object ):
         pass
         
         # Convert the binary/structural image into nifti format
-        atnNiiFileName = convertXCATBinaryFile( self.xcatAtnFile, 
-                                                self.outDir, 
-                                                self.imageDimension, 
-                                                self.voxelSpacing, 
-                                                False, 
-                                                self.outXCATAtnImgName )
+        atnNiiFileName = cxbf.convertXCATBinaryFile( self.xcatAtnFile, 
+                                                     self.outDir, 
+                                                     self.imageDimension, 
+                                                     self.voxelSpacing, 
+                                                     False, 
+                                                     self.outXCATAtnImgName )
         
         if self.outXCATCTImgName is not None:
-            convertXCATBinaryFile( self.xcatAtnFile, 
-                                   self.outDir, 
-                                   self.imageDimension, 
-                                   self.voxelSpacing, 
-                                   True, 
-                                   self.outXCATCTImgName )
+            cxbf.convertXCATBinaryFile( self.xcatAtnFile, 
+                                        self.outDir, 
+                                        self.imageDimension, 
+                                        self.voxelSpacing, 
+                                        True, 
+                                        self.outXCATCTImgName )
 
         
         
