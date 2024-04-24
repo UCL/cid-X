@@ -348,7 +348,7 @@ def convertXCATDVFTextFileToNiftiImage( inputXCATDVFFileName,
     if generateDVFNiiFile:
         # Calculate a mask image from the structural one and find the region outside which needs to be replaced with the closest inside values
         maskData = np.ones_like( structuralNii.get_fdata() )
-        maskData[ np.where(structuralNii.get_fdata() > np.min(structuralNii.get_fdata()[structuralNii.get_fdata()!=0])) ] = 0
+        maskData[ np.where(structuralNii.get_fdata() >= np.min(structuralNii.get_fdata()[structuralNii.get_fdata()!=0])) ] = 0
         
         maskData = binary_dilation(maskData).astype(maskData.dtype)
         indices = distance_transform_edt( maskData, voxelSize, return_distances=False, return_indices=True )
