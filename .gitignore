@@ -1,3 +1,4 @@
 Docu/build
 .idea
 __pycache__
+.venv
